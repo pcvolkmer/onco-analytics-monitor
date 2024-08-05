@@ -26,7 +26,7 @@ class ObdsXmlTopicMonitor(
     statisticsEventProducer: StatisticsSink,
 ) : TopicMonitor(statisticsEventProducer) {
 
-    @KafkaListener(topicPattern = "input.*")
+    @KafkaListener(topicPattern = "onkostar.MELDUNG_EXPORT.*")
     override fun handleTopicRecord(
         @Header(KafkaHeaders.RECEIVED_TOPIC) topic: String,
         @Header(KafkaHeaders.RECEIVED_TIMESTAMP) timestamp: Long,
