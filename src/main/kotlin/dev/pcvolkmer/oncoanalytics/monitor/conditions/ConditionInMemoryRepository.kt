@@ -25,6 +25,14 @@ class ConditionInMemoryRepository {
         return false
     }
 
+    fun saveIfNotOlderNewerVersion(condition: Condition): Boolean {
+        if ((this.conditions[condition.id]?.version ?: 0) <= condition.version) {
+            this.conditions[condition.id] = condition
+            return true
+        }
+        return false
+    }
+
     fun findAll(): List<Condition> {
         return conditions.values.toList()
     }
