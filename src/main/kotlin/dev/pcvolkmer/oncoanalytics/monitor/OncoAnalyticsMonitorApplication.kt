@@ -14,7 +14,7 @@ class OncoAnalyticsMonitorApplication {
 
     @Bean
     fun statisticsEventProducer(): StatisticsSink {
-        return Sinks.many().multicast().onBackpressureBuffer()
+        return Sinks.many().multicast().directBestEffort()
     }
 
     @Bean
