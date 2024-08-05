@@ -161,6 +161,11 @@
     function updateData(data, elemName) {
         let elem = document.getElementById(elemName);
 
+        elem.parentElement.parentElement.style.backgroundColor = '#cfc';
+        setTimeout(() => {
+            elem.parentElement.parentElement.style.backgroundColor = '';
+        }, 1000);
+
         elem.innerHTML = '<thead><tr><th>ICD10-Gruppe</th><th>Anzahl</th></tr></thead>'
             + Array.from(data.entries).map(entry => `<tr><td>${entry.name}</td><td>${entry.count}</td></tr>`).join('');
     }
