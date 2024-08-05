@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>onco-analytics-monitor</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #f5f5f5;
+        }
+
+        header {
+            margin: 1em 0 6em 0;
+            text-align: left;
+        }
+
+        .statistics table {
+            border-collapse: collapse;
+            margin: 3em auto 0;
+            background-color: white;
+        }
+
+        td, th {
+            text-align: left;
+            padding: 2px;
+        }
+
+        tr {
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+
+        tr th {
+            background-color: #ccc;
+        }
+
+        tr:nth-child(even) td {
+            background-color: #eee
+        }
+
+        tr > td:last-of-type {
+            text-align: right;
+        }
+
+        .content {
+            width: fit-content;
+            height: 100vh;
+            margin: 0 auto;
+            padding: 1em;
+            text-align: center;
+        }
+
+        .step {
+            display: inline-block;
+            width: fit-content;
+            vertical-align: top;
+        }
+
+        .step > .item {
+            display: inline-block;
+            min-width: 6em;
+            padding: .4em .4em 2em;
+            border: 1px solid transparent;
+        }
+
+        .step .item:has(.statistics) {
+            width: 14em;
+
+            background: white;
+            border-radius: 6em 6em 1em 1em;
+            border: 1px solid #ddd;
+            box-shadow: 1px 1px 2px #ddd;
+        }
+
+        .step:before, .step:after {
+            content: "";
+            margin: 1.5em 0;
+            width: 1em;
+            height: 2px;
+            background: black;
+            display: inline-block;
+        }
+
+        .step:first-of-type:before, .step:last-of-type:after {
+            display: none;
+        }
+
+        .step .logo {
+            display: block;
+            width: 3em;
+            height: 3em;
+            vertical-align: middle;
+            margin: 1em auto;
+        }
+
+        .step .description {
+            font-size: small;
+            font-weight: bold;
+            display: block;
+            text-align: center;
+        }
+
+        .step > .statistics {
+            display: block;
+            vertical-align: middle;
+            font-family: monospace;
+            border: 1px solid gray;
+            border-left: none;
+            border-radius: 1em;
+            padding: 1em;
+        }
+    </style>
+</head>
+<body>
+
+<main class="content">
+
+    <header>
+        <h1>onco-analytics-monitor</h1>
+        <p>
+            Überwachung der einzelnen Kafka Topics und enthaltener Conditions - aufgeteilt nach ICD10-Gruppe.
+        </p>
+    </header>
+
+    <div class="step">
+        <div class="item">
+            <img class="logo" th:src="@{/images/db.png}" alt="db"/>
+            <div class="description">Onkostar Database</div>
+        </div>
+    </div><div class="step">
+        <div class="item">
+            <img class="logo" th:src="@{/images/kafka.png}" alt="kafka"/>
+            <div class="description">Kafka Connect</div>
+        </div>
+    </div><div class="step">
+        <div class="item">
+            <img class="logo" th:src="@{/images/topic.png}" alt="topic"/>
+            <div class="description">Kafka Topic oBDS XML</div>
+            <div class="statistics">
+                <table id="obdsxml"></table>
+            </div>
+        </div>
+    </div><div class="step">
+        <div class="item">
+            <img class="logo" th:src="@{/images/job.png}" alt="job"/>
+            <div class="description">oBDS-to-fhir</div>
+        </div>
+    </div><div class="step">
+        <div class="item">
+            <img class="logo" th:src="@{/images/topic.png}" alt="topic"/>
+            <div class="description">Kafka Topic oBDS FHIR</div>
+            <div class="statistics">
+                <table id="obdsfhir"></table>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<script>
+    function updateData(data, elemName) {
+        let elem = document.getElementById(elemName);
+
+        elem.innerHTML = '<thead><tr><th>ICD10-Gruppe</th><th>Anzahl</th></tr></thead>'
+            + Array.from(data.entries).map(entry => `<tr><td>${entry.name}</td><td>${entry.count}</td></tr>`).join('');
+    }
+
+    fetch('/statistics/obdsxml').then(res => res.json()).then(data => updateData(data, 'obdsxml'));
+    fetch('/statistics/obdsfhir').then(res => res.json()).then(data => updateData(data, 'obdsfhir'));
+
+    window.addEventListener('load', () => {
+        const evtSource = new EventSource('/events');
+
+        evtSource.addEventListener('obdsxml', (event) => {
+            updateData(JSON.parse(event.data), 'obdsxml')
+        });
+
+        evtSource.addEventListener('obdsfhir', (event) => {
+            updateData(JSON.parse(event.data), 'obdsfhir')
+        });
+    });
+</script>
+
+</body>
+</html>

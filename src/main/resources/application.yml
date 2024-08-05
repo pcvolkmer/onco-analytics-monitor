@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: onco-analytics-monitor
+
+  kafka:
+    consumer:
+      group-id: ${spring.application.name}
+
+  web:
+    resources:
+      cache:
+        cachecontrol:
+          max-age: 1d
+      chain:
+        strategy:
+          content:
+            enabled: true
+            paths: /**/*.js,/**/*.css,/**/*.svg,/**/*.jpeg

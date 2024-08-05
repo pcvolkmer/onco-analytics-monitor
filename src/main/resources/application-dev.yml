@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: onco-analytics-monitor
+
+  docker:
+    compose:
+      file: dev-compose.yml
+
