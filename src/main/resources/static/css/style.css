@@ -56,8 +56,12 @@ tr > td:last-of-type {
 .step > .item {
     display: inline-block;
     min-width: 6em;
-    padding: .4em .4em 2em;
-    border: 1px solid transparent;
+    padding: .4em;
+
+    background: white;
+    border-radius: .4em;
+    border: 1px solid #ddd;
+    box-shadow: 1px 1px 2px #ddd;
 }
 
 .step .item:has(.statistics) {
@@ -78,8 +82,15 @@ tr > td:last-of-type {
     display: inline-block;
 }
 
-.step:first-of-type:before, .step:last-of-type:after {
+.step:first-of-type:before {
     display: none;
+}
+
+.step:last-of-type:after {
+    background: linear-gradient(to right, #555 0, #555 50%, transparent 50%, transparent 100%) repeat-x;
+    background-size: 8px;
+
+    width: 2em;
 }
 
 .step .logo {
