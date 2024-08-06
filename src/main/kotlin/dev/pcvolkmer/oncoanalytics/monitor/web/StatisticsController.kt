@@ -15,6 +15,8 @@ class StatisticsController(
     private val obdsXmlConditionRepository: ConditionInMemoryRepository,
     @Qualifier("obdsFhirConditionRepository")
     private val obdsFhirConditionRepository: ConditionInMemoryRepository,
+    @Qualifier("fhirPseudonymizedConditionRepository")
+    private val fhirPseudonymizedConditionRepository: ConditionInMemoryRepository,
 ) {
 
     @GetMapping(path = ["obdsxml"])
@@ -25,6 +27,11 @@ class StatisticsController(
     @GetMapping(path = ["obdsfhir"])
     fun obdsfhirStatistics(): Statistics {
         return fetchStatistics("obdfhir", obdsFhirConditionRepository)
+    }
+
+    @GetMapping(path = ["fhirpseudonymized"])
+    fun fhirpseudonymizedStatistics(): Statistics {
+        return fetchStatistics("fhirpseudonymized", fhirPseudonymizedConditionRepository)
     }
 
 }

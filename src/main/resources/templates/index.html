@@ -7,14 +7,14 @@
 </head>
 <body>
 
-<main class="content">
+<header>
+    <h1>onco-analytics-monitor</h1>
+    <p>
+        Überwachung der einzelnen Kafka Topics und enthaltener Conditions - aufgeteilt nach ICD10-Gruppe.
+    </p>
+</header>
 
-    <header>
-        <h1>onco-analytics-monitor</h1>
-        <p>
-            Überwachung der einzelnen Kafka Topics und enthaltener Conditions - aufgeteilt nach ICD10-Gruppe.
-        </p>
-    </header>
+<main>
 
     <div class="step">
         <div class="item">
@@ -29,7 +29,7 @@
     </div><div class="step">
         <div class="item">
             <img class="logo" th:src="@{/images/topic.png}" alt="topic"/>
-            <div class="description">Kafka Topic oBDS XML</div>
+            <div class="description">Kafka Topic<br/>oBDS XML</div>
             <div class="statistics">
                 <table id="obdsxml"></table>
             </div>
@@ -42,12 +42,25 @@
     </div><div class="step">
         <div class="item">
             <img class="logo" th:src="@{/images/topic.png}" alt="topic"/>
-            <div class="description">Kafka Topic oBDS FHIR</div>
+            <div class="description">Kafka Topic<br/>oBDS FHIR</div>
             <div class="statistics">
                 <table id="obdsfhir"></table>
             </div>
         </div>
+    </div><div class="step">
+    <div class="item">
+        <img class="logo" th:src="@{/images/job.png}" alt="job"/>
+        <div class="description">fhir-pseudonymizer</div>
     </div>
+    </div><div class="step">
+    <div class="item">
+        <img class="logo" th:src="@{/images/topic.png}" alt="topic"/>
+        <div class="description">Kafka Topic<br/>FHIR pseudonymized</div>
+        <div class="statistics">
+            <table id="fhirpseudonymized"></table>
+        </div>
+    </div>
+</div>
 
 </main>
 
@@ -66,6 +79,7 @@
 
     fetch('/statistics/obdsxml').then(res => res.json()).then(data => updateData(data, 'obdsxml'));
     fetch('/statistics/obdsfhir').then(res => res.json()).then(data => updateData(data, 'obdsfhir'));
+    fetch('/statistics/fhirpseudonymized').then(res => res.json()).then(data => updateData(data, 'fhirpseudonymized'));
 
     window.addEventListener('load', () => {
         const evtSource = new EventSource('/events');
@@ -76,6 +90,10 @@
 
         evtSource.addEventListener('obdsfhir', (event) => {
             updateData(JSON.parse(event.data), 'obdsfhir')
+        });
+
+        evtSource.addEventListener('fhirpseudonymized', (event) => {
+            updateData(JSON.parse(event.data), 'fhirpseudonymized')
         });
     });
 </script>

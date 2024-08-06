@@ -27,6 +27,11 @@ class OncoAnalyticsMonitorApplication {
         return ConditionInMemoryRepository()
     }
 
+    @Bean
+    fun fhirPseudonymizedConditionRepository(): ConditionInMemoryRepository {
+        return ConditionInMemoryRepository()
+    }
+
 }
 
 fun main(args: Array<String>) {

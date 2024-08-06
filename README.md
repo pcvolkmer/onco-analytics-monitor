@@ -20,3 +20,4 @@ in [onco-analytics-on-fhir](https://github.com/bzkf/onco-analytics-on-fhir) verw
 
 * `onkostar.MELDUNG_EXPORT.*`: Alle eingehenden Meldungen aus Onkostar
 * `fhir.obds.Condition.*`: Alle Conditions, die aus den oBDS-Meldungen erzeugt wurden.
+* `fhir.pseudonymized.*`: Alle pseudonymisierten Conditions.
