@@ -23,7 +23,7 @@ class OncoAnalyticsMonitorApplication {
     }
 
     @Bean
-    fun obdsFhirConditionRepository(): ConditionInMemoryRepository {
+    fun fhirObdsConditionRepository(): ConditionInMemoryRepository {
         return ConditionInMemoryRepository()
     }
 

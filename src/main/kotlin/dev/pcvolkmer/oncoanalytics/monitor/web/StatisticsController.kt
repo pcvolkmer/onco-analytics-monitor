@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestController
 class StatisticsController(
     @Qualifier("obdsXmlConditionRepository")
     private val obdsXmlConditionRepository: ConditionInMemoryRepository,
-    @Qualifier("obdsFhirConditionRepository")
-    private val obdsFhirConditionRepository: ConditionInMemoryRepository,
+    @Qualifier("fhirObdsConditionRepository")
+    private val fhirObdsConditionRepository: ConditionInMemoryRepository,
     @Qualifier("fhirPseudonymizedConditionRepository")
     private val fhirPseudonymizedConditionRepository: ConditionInMemoryRepository,
 ) {
@@ -24,9 +24,9 @@ class StatisticsController(
         return fetchStatistics("obdsxml", obdsXmlConditionRepository)
     }
 
-    @GetMapping(path = ["obdsfhir"])
+    @GetMapping(path = ["fhirobds"])
     fun obdsfhirStatistics(): Statistics {
-        return fetchStatistics("obdfhir", obdsFhirConditionRepository)
+        return fetchStatistics("fhirobds", fhirObdsConditionRepository)
     }
 
     @GetMapping(path = ["fhirpseudonymized"])

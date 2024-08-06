@@ -15,8 +15,8 @@ import org.springframework.messaging.handler.annotation.Payload
 import org.springframework.stereotype.Component
 
 @Component
-class ObdsFhirTopicMonitor(
-    @Qualifier("obdsFhirConditionRepository")
+class FhirObdsTopicMonitor(
+    @Qualifier("fhirObdsConditionRepository")
     private val conditionRepository: ConditionInMemoryRepository,
     statisticsEventProducer: StatisticsSink,
 ) : TopicMonitor(statisticsEventProducer) {
@@ -45,7 +45,7 @@ class ObdsFhirTopicMonitor(
                 )
 
                 if (updated) {
-                    sendUpdatedStatistics(fetchStatistics("obdsfhir", conditionRepository))
+                    sendUpdatedStatistics(fetchStatistics("fhirobds", conditionRepository))
                 }
             }
         } catch (e: Exception) {

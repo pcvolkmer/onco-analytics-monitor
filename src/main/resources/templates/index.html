@@ -44,7 +44,7 @@
             <img class="logo" th:src="@{/images/topic.png}" alt="topic"/>
             <div class="description">Kafka Topic<br/>oBDS FHIR</div>
             <div class="statistics">
-                <table id="obdsfhir"></table>
+                <table id="fhirobds"></table>
             </div>
         </div>
     </div><div class="step">
@@ -78,7 +78,7 @@
     }
 
     fetch('/statistics/obdsxml').then(res => res.json()).then(data => updateData(data, 'obdsxml'));
-    fetch('/statistics/obdsfhir').then(res => res.json()).then(data => updateData(data, 'obdsfhir'));
+    fetch('/statistics/fhirobds').then(res => res.json()).then(data => updateData(data, 'fhirobds'));
     fetch('/statistics/fhirpseudonymized').then(res => res.json()).then(data => updateData(data, 'fhirpseudonymized'));
 
     window.addEventListener('load', () => {
@@ -88,8 +88,8 @@
             updateData(JSON.parse(event.data), 'obdsxml')
         });
 
-        evtSource.addEventListener('obdsfhir', (event) => {
-            updateData(JSON.parse(event.data), 'obdsfhir')
+        evtSource.addEventListener('fhirobds', (event) => {
+            updateData(JSON.parse(event.data), 'fhirobds')
         });
 
         evtSource.addEventListener('fhirpseudonymized', (event) => {
