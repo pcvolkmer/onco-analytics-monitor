@@ -5,7 +5,7 @@ import org.apache.commons.codec.digest.DigestUtils
 @JvmInline
 value class ConditionId(val value: String) {
     companion object {
-        fun generateConditionId(patientId: String, tumorId: String): ConditionId {
+        fun fromPatientIdAndTumorId(patientId: String, tumorId: String): ConditionId {
             return ConditionId(DigestUtils.sha256Hex("$patientId-$tumorId"))
         }
     }
