@@ -37,10 +37,9 @@ class ObdsFhirTopicMonitor(
 
             if (firstEntry.resource.fhirType() == "Condition") {
                 val condition = firstEntry.resource as org.hl7.fhir.r4.model.Condition
-                val updated = conditionRepository.saveIfNotOlderNewerVersion(
+                val updated = conditionRepository.save(
                     Condition(
                         ConditionId(condition.id),
-                        0,
                         condition.code.coding.first { "http://fhir.de/CodeSystem/bfarm/icd-10-gm" == it.system }.code
                     )
                 )

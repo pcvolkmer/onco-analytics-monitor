@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.databind.ObjectMapper
 import dev.pcvolkmer.oncoanalytics.monitor.StatisticsSink
 import dev.pcvolkmer.oncoanalytics.monitor.conditions.Condition
+import dev.pcvolkmer.oncoanalytics.monitor.conditions.ConditionId
 import dev.pcvolkmer.oncoanalytics.monitor.conditions.ConditionInMemoryRepository
 import dev.pcvolkmer.oncoanalytics.monitor.fetchStatistics
 import org.springframework.beans.factory.annotation.Qualifier
@@ -53,9 +54,9 @@ class ObdsXmlTopicMonitor(
 
             val updated = conditionRepository.saveIfNewerVersion(
                 Condition(
-                    Condition.generateConditionId(patientId, tumorId),
-                    p.payload.version,
-                    icd10
+                    ConditionId.fromPatientIdAndTumorId(patientId, tumorId),
+                    icd10,
+                    p.payload.version
                 )
             )
 
