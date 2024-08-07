@@ -42,8 +42,7 @@ class InMemoryConditionRepository : ConditionRepository {
 
     override fun saveIfNewerVersion(condition: Condition): Boolean {
         if ((this.conditions[condition.id]?.version ?: 0) < condition.version) {
-            this.conditions[condition.id] = condition
-            return true
+            return this.save(condition)
         }
         return false
     }
