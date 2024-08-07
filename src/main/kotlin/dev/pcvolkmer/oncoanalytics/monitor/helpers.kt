@@ -1,6 +1,6 @@
 package dev.pcvolkmer.oncoanalytics.monitor
 
-import dev.pcvolkmer.oncoanalytics.monitor.conditions.ConditionInMemoryRepository
+import dev.pcvolkmer.oncoanalytics.monitor.conditions.ConditionRepository
 import dev.pcvolkmer.oncoanalytics.monitor.conditions.Statistics
 import dev.pcvolkmer.oncoanalytics.monitor.conditions.StatisticsEntry
 
@@ -32,7 +32,15 @@ val allKeys = listOf(
     "Other"
 )
 
-fun fetchStatistics(name: String, source: ConditionInMemoryRepository): Statistics {
+/**
+ * Fetch statistics using given ConditionRepository
+ *
+ * @see ConditionRepository
+ *
+ * @author Paul-Christian Volkmer
+ * @since 0.1.0
+ */
+fun fetchStatistics(name: String, source: ConditionRepository): Statistics {
     fun mapIcd10Code(code: String): String {
         val c = when (code) {
             "D39.1", "D09.0", "D41.4" -> code
@@ -72,5 +80,7 @@ fun fetchStatistics(name: String, source: ConditionInMemoryRepository): Statisti
         .groupBy { mapIcd10Code(it.icd10) }
         .mapValues { it.value.size }
 
-    return Statistics(name, allKeys.map { StatisticsEntry(it, 0) }.map { StatisticsEntry(it.name, entries.getOrDefault(it.name, 0)) })
+    return Statistics(
+        name,
+        allKeys.map { StatisticsEntry(it, 0) }.map { StatisticsEntry(it.name, entries.getOrDefault(it.name, 0)) })
 }

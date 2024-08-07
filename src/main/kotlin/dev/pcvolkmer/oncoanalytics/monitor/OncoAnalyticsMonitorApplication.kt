@@ -1,6 +1,6 @@
 package dev.pcvolkmer.oncoanalytics.monitor
 
-import dev.pcvolkmer.oncoanalytics.monitor.conditions.ConditionInMemoryRepository
+import dev.pcvolkmer.oncoanalytics.monitor.conditions.InMemoryConditionRepository
 import dev.pcvolkmer.oncoanalytics.monitor.conditions.Statistics
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
@@ -18,18 +18,18 @@ class OncoAnalyticsMonitorApplication {
     }
 
     @Bean
-    fun obdsXmlConditionRepository(): ConditionInMemoryRepository {
-        return ConditionInMemoryRepository()
+    fun obdsXmlConditionRepository(): InMemoryConditionRepository {
+        return InMemoryConditionRepository()
     }
 
     @Bean
-    fun fhirObdsConditionRepository(): ConditionInMemoryRepository {
-        return ConditionInMemoryRepository()
+    fun fhirObdsConditionRepository(): InMemoryConditionRepository {
+        return InMemoryConditionRepository()
     }
 
     @Bean
-    fun fhirPseudonymizedConditionRepository(): ConditionInMemoryRepository {
-        return ConditionInMemoryRepository()
+    fun fhirPseudonymizedConditionRepository(): InMemoryConditionRepository {
+        return InMemoryConditionRepository()
     }
 
 }

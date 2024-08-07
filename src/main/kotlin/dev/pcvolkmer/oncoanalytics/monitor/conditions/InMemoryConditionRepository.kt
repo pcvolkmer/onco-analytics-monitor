@@ -2,6 +2,12 @@ package dev.pcvolkmer.oncoanalytics.monitor.conditions
 
 import org.apache.commons.codec.digest.DigestUtils
 
+/**
+ * Type to be used for the condition ID
+ *
+ * @author Paul-Christian Volkmer
+ * @since 0.1.0
+ */
 @JvmInline
 value class ConditionId(val value: String) {
     companion object {
@@ -11,13 +17,30 @@ value class ConditionId(val value: String) {
     }
 }
 
+/**
+ * A condition
+ *
+ * @property id The conditions unique ID
+ * @property icd10 The ICD10 code of the related diagnosis
+ * @property version (if present) The version of the related oBDS message or zero
+ *
+ * @author Paul-Christian Volkmer
+ * @since 0.1.0
+ */
 data class Condition(val id: ConditionId, val icd10: String, val version: Int = 0)
 
-class ConditionInMemoryRepository {
+/**
+ * In memory implementation of a ConditionRepository
+ *
+ * @author Paul-Christian Volkmer
+ * @since 0.1.0
+ * @see ConditionRepository
+ */
+class InMemoryConditionRepository : ConditionRepository {
 
     private val conditions = mutableMapOf<ConditionId, Condition>()
 
-    fun saveIfNewerVersion(condition: Condition): Boolean {
+    override fun saveIfNewerVersion(condition: Condition): Boolean {
         if ((this.conditions[condition.id]?.version ?: 0) < condition.version) {
             this.conditions[condition.id] = condition
             return true
@@ -25,12 +48,12 @@ class ConditionInMemoryRepository {
         return false
     }
 
-    fun save(condition: Condition): Boolean {
+    override fun save(condition: Condition): Boolean {
         this.conditions[condition.id] = condition
         return true
     }
 
-    fun findAll(): List<Condition> {
+    override fun findAll(): List<Condition> {
         return conditions.values.toList()
     }
 

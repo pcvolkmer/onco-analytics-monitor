@@ -1,6 +1,6 @@
 package dev.pcvolkmer.oncoanalytics.monitor.web
 
-import dev.pcvolkmer.oncoanalytics.monitor.conditions.ConditionInMemoryRepository
+import dev.pcvolkmer.oncoanalytics.monitor.conditions.ConditionRepository
 import dev.pcvolkmer.oncoanalytics.monitor.conditions.Statistics
 import dev.pcvolkmer.oncoanalytics.monitor.fetchStatistics
 import org.springframework.beans.factory.annotation.Qualifier
@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping(path = ["/statistics"])
 class StatisticsController(
     @Qualifier("obdsXmlConditionRepository")
-    private val obdsXmlConditionRepository: ConditionInMemoryRepository,
+    private val obdsXmlConditionRepository: ConditionRepository,
     @Qualifier("fhirObdsConditionRepository")
-    private val fhirObdsConditionRepository: ConditionInMemoryRepository,
+    private val fhirObdsConditionRepository: ConditionRepository,
     @Qualifier("fhirPseudonymizedConditionRepository")
-    private val fhirPseudonymizedConditionRepository: ConditionInMemoryRepository,
+    private val fhirPseudonymizedConditionRepository: ConditionRepository,
 ) {
 
     @GetMapping(path = ["obdsxml"])

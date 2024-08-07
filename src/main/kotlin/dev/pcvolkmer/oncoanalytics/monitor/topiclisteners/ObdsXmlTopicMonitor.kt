@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import dev.pcvolkmer.oncoanalytics.monitor.StatisticsSink
 import dev.pcvolkmer.oncoanalytics.monitor.conditions.Condition
 import dev.pcvolkmer.oncoanalytics.monitor.conditions.ConditionId
-import dev.pcvolkmer.oncoanalytics.monitor.conditions.ConditionInMemoryRepository
+import dev.pcvolkmer.oncoanalytics.monitor.conditions.ConditionRepository
 import dev.pcvolkmer.oncoanalytics.monitor.fetchStatistics
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.kafka.annotation.KafkaListener
@@ -22,7 +22,7 @@ import javax.xml.xpath.XPathFactory
 @Component
 class ObdsXmlTopicMonitor(
     @Qualifier("obdsXmlConditionRepository")
-    private val conditionRepository: ConditionInMemoryRepository,
+    private val conditionRepository: ConditionRepository,
     private val objectMapper: ObjectMapper,
     statisticsEventProducer: StatisticsSink,
 ) : TopicMonitor(statisticsEventProducer) {

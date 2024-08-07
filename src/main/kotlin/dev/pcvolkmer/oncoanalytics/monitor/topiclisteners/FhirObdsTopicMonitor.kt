@@ -4,7 +4,7 @@ import ca.uhn.fhir.context.FhirContext
 import dev.pcvolkmer.oncoanalytics.monitor.StatisticsSink
 import dev.pcvolkmer.oncoanalytics.monitor.conditions.Condition
 import dev.pcvolkmer.oncoanalytics.monitor.conditions.ConditionId
-import dev.pcvolkmer.oncoanalytics.monitor.conditions.ConditionInMemoryRepository
+import dev.pcvolkmer.oncoanalytics.monitor.conditions.ConditionRepository
 import dev.pcvolkmer.oncoanalytics.monitor.fetchStatistics
 import org.hl7.fhir.r4.model.Bundle
 import org.springframework.beans.factory.annotation.Qualifier
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component
 @Component
 class FhirObdsTopicMonitor(
     @Qualifier("fhirObdsConditionRepository")
-    private val conditionRepository: ConditionInMemoryRepository,
+    private val conditionRepository: ConditionRepository,
     statisticsEventProducer: StatisticsSink,
 ) : TopicMonitor(statisticsEventProducer) {
 
