@@ -1,12 +1,8 @@
 package dev.pcvolkmer.oncoanalytics.monitor.topiclisteners
 
-import ca.uhn.fhir.context.FhirContext
 import dev.pcvolkmer.oncoanalytics.monitor.StatisticsSink
-import dev.pcvolkmer.oncoanalytics.monitor.conditions.Condition
-import dev.pcvolkmer.oncoanalytics.monitor.conditions.ConditionId
 import dev.pcvolkmer.oncoanalytics.monitor.conditions.ConditionRepository
 import dev.pcvolkmer.oncoanalytics.monitor.fetchStatistics
-import org.hl7.fhir.r4.model.Bundle
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.support.KafkaHeaders
@@ -14,12 +10,20 @@ import org.springframework.messaging.handler.annotation.Header
 import org.springframework.messaging.handler.annotation.Payload
 import org.springframework.stereotype.Component
 
+/**
+ * FHIR TopicMonitor to listen to Kafka Topics matching 'fhir.obds.Condition.*'
+ *
+ * @property statisticsEventProducer The event producer/sink to notify about saved condition
+ *
+ * @author Paul-Christian Volkmer
+ * @since 0.1.0
+ */
 @Component
 class FhirObdsTopicMonitor(
     @Qualifier("fhirObdsConditionRepository")
     private val conditionRepository: ConditionRepository,
     statisticsEventProducer: StatisticsSink,
-) : TopicMonitor(statisticsEventProducer) {
+) : AbstractFhirTopicMonitor(statisticsEventProducer) {
 
     @KafkaListener(topicPattern = "fhir.obds.Condition.*")
     override fun handleTopicRecord(
@@ -29,22 +33,8 @@ class FhirObdsTopicMonitor(
         @Payload payload: String,
     ) {
         try {
-            val ctx = FhirContext.forR4()
-            val parser = ctx.newJsonParser()
-
-            val bundle = parser.parseResource(Bundle::class.java, payload)
-            val firstEntry = bundle.entry.firstOrNull() ?: return
-
-            if (firstEntry.resource.fhirType() == "Condition") {
-                val condition = firstEntry.resource as org.hl7.fhir.r4.model.Condition
-                val updated = conditionRepository.save(
-                    Condition(
-                        ConditionId(condition.id),
-                        condition.code.coding.first { "http://fhir.de/CodeSystem/bfarm/icd-10-gm" == it.system }.code
-                    )
-                )
-
-                if (updated) {
+            this.handleUsableFhirPayload(payload) { condition ->
+                if (conditionRepository.save(condition)) {
                     sendUpdatedStatistics(fetchStatistics("fhirobds", conditionRepository))
                 }
             }

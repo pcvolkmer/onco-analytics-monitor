@@ -19,13 +19,21 @@ import org.xml.sax.InputSource
 import java.io.StringReader
 import javax.xml.xpath.XPathFactory
 
+/**
+ * oBDS TopicMonitor to listen to Kafka Topics matching 'onkostar.MELDUNG_EXPORT.*'
+ *
+ * @property statisticsEventProducer The event producer/sink to notify about saved condition
+ *
+ * @author Paul-Christian Volkmer
+ * @since 0.1.0
+ */
 @Component
 class ObdsXmlTopicMonitor(
     @Qualifier("obdsXmlConditionRepository")
     private val conditionRepository: ConditionRepository,
     private val objectMapper: ObjectMapper,
     statisticsEventProducer: StatisticsSink,
-) : TopicMonitor(statisticsEventProducer) {
+) : AbstractTopicMonitor(statisticsEventProducer) {
 
     @KafkaListener(topicPattern = "onkostar.MELDUNG_EXPORT.*")
     override fun handleTopicRecord(
