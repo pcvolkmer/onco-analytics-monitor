@@ -65,16 +65,26 @@
 </main>
 
 <script>
+    const prevData = [];
+
     function updateData(data, elemName) {
         let elem = document.getElementById(elemName);
 
-        elem.parentElement.parentElement.style.backgroundColor = '#cfc';
+        elem.parentElement.parentElement.style.backgroundColor = '#00800055';
         setTimeout(() => {
             elem.parentElement.parentElement.style.backgroundColor = '';
-        }, 1000);
+        }, 250);
+
+        let diff = data.entries
+            .filter((entry, idx) => prevData[elemName] !== undefined && prevData[elemName][idx].count !== entry.count)
+            .map(entry => entry.name);
 
         elem.innerHTML = '<thead><tr><th>ICD10-Gruppe</th><th>Anzahl</th></tr></thead>'
-            + Array.from(data.entries).map(entry => `<tr><td>${entry.name}</td><td>${entry.count}</td></tr>`).join('');
+            + Array.from(data.entries)
+                .map(entry => (Array.from(diff).includes(entry.name)) ? `<tr class="changed"><td>${entry.name}</td><td>${entry.count}</td></tr>` : `<tr><td>${entry.name}</td><td>${entry.count}</td></tr>`)
+                .join('');
+
+        prevData[elemName] = data.entries;
     }
 
     fetch('/statistics/obdsxml').then(res => res.json()).then(data => updateData(data, 'obdsxml'));

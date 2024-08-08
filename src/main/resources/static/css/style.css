@@ -42,6 +42,18 @@ tr {
     border-spacing: 0;
 }
 
+@keyframes changed-row {
+    from {background-color: #00800055; color: green;}
+    80% {background-color: #00800055; color: green;}
+    to {background-color: inherit; color: inherit;}
+}
+
+tr.changed * {
+    animation-duration: 2s;
+    animation-name: changed-row;
+    animation-timing-function: ease;
+}
+
 tr th {
     background-color: #ccc;
 }
