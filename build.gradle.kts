@@ -4,6 +4,7 @@ plugins {
     id("org.graalvm.buildtools.native") version "0.10.2"
     kotlin("jvm") version "1.9.24"
     kotlin("plugin.spring") version "1.9.24"
+    jacoco
 }
 
 group = "dev.pcvolkmer.onco-analytics"
