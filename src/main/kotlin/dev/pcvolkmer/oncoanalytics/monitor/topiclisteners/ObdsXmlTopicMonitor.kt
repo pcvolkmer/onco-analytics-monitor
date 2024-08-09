@@ -9,6 +9,7 @@ import dev.pcvolkmer.oncoanalytics.monitor.conditions.Condition
 import dev.pcvolkmer.oncoanalytics.monitor.conditions.ConditionId
 import dev.pcvolkmer.oncoanalytics.monitor.conditions.ConditionRepository
 import dev.pcvolkmer.oncoanalytics.monitor.fetchStatistics
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.kafka.support.KafkaHeaders
@@ -35,6 +36,9 @@ class ObdsXmlTopicMonitor(
     statisticsEventProducer: StatisticsSink,
 ) : AbstractTopicMonitor(statisticsEventProducer) {
 
+    private val logger = LoggerFactory.getLogger(javaClass)
+    private val xPath = XPathFactory.newDefaultInstance().newXPath()
+
     @KafkaListener(topicPattern = "onkostar.MELDUNG_EXPORT.*")
     override fun handleTopicRecord(
         @Header(KafkaHeaders.RECEIVED_TOPIC) topic: String,
@@ -44,35 +48,69 @@ class ObdsXmlTopicMonitor(
     ) {
         try {
             val p = objectMapper.readValue(payload, Record::class.java)
-            val xPath = XPathFactory.newDefaultInstance().newXPath()
-
-            // Use local-name() due to XML namespace
-            val patientId = xPath.evaluate(
-                "//*[local-name()='Patienten_Stammdaten']/@Patient_ID",
-                InputSource(StringReader(p.payload.data))
-            )
-            val tumorId = xPath.evaluate(
-                "//*[local-name()='Tumorzuordnung']/@Tumor_ID",
-                InputSource(StringReader(p.payload.data))
-            )
-            val icd10 = xPath.evaluate(
-                "//*[local-name()='Primaertumor_ICD_Code']/text()",
-                InputSource(StringReader(p.payload.data))
-            )
-
-            val updated = conditionRepository.saveIfNewerVersion(
-                Condition(
-                    ConditionId.fromPatientIdAndTumorId(patientId, tumorId),
-                    icd10,
-                    p.payload.version
-                )
-            )
-
-            if (updated) {
-                sendUpdatedStatistics(fetchStatistics("obdsxml", conditionRepository))
+            when (xPath.evaluate("name(/*)", InputSource(StringReader(p.payload.data)))) {
+                "ADT_GEKID" -> handleObds2Payload(p.payload)
+                "oBDS" -> handleObds3Payload(p.payload)
+                else -> logger.warn("Cannot handle a non oBDS 2.x/3.x record!")
             }
         } catch (e: Exception) {
             // Ignore
+        }
+    }
+
+    private fun handleObds2Payload(payload: RecordPayload) {
+        // Use local-name() due to XML namespace
+        val patientId = xPath.evaluate(
+            "//*[local-name()='Patienten_Stammdaten']/@Patient_ID",
+            InputSource(StringReader(payload.data))
+        )
+        val tumorId = xPath.evaluate(
+            "//*[local-name()='Tumorzuordnung']/@Tumor_ID",
+            InputSource(StringReader(payload.data))
+        )
+        val icd10 = xPath.evaluate(
+            "//*[local-name()='Primaertumor_ICD_Code']/text()",
+            InputSource(StringReader(payload.data))
+        )
+
+        val updated = conditionRepository.saveIfNewerVersion(
+            Condition(
+                ConditionId.fromPatientIdAndTumorId(patientId, tumorId),
+                icd10,
+                payload.version
+            )
+        )
+
+        if (updated) {
+            sendUpdatedStatistics(fetchStatistics("obdsxml", conditionRepository))
+        }
+    }
+
+    private fun handleObds3Payload(payload: RecordPayload) {
+        // Use local-name() due to XML namespace
+        val patientId = xPath.evaluate(
+            "//*[local-name()='Patient']/@Patient_ID",
+            InputSource(StringReader(payload.data))
+        )
+        val tumorId = xPath.evaluate(
+            "//*[local-name()='Tumorzuordnung']/@Tumor_ID",
+            InputSource(StringReader(payload.data))
+        )
+        val icd10 = xPath.evaluate(
+            "//*[local-name()='Primaertumor_ICD']/*[local-name()='Code']/text()",
+            InputSource(StringReader(payload.data))
+        )
+
+        val updated = conditionRepository.saveIfNewerVersion(
+            Condition(
+                ConditionId.fromPatientIdAndTumorId(patientId, tumorId),
+                icd10,
+                payload.version
+            )
+        )
+
+        if (updated) {
+            sendUpdatedStatistics(fetchStatistics("obdsxml", conditionRepository))
         }
     }
 
