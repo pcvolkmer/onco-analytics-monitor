@@ -1,5 +1,7 @@
 # onco-analytics-monitor
 
+[![Run Tests](https://github.com/pcvolkmer/onco-analytics-monitor/actions/workflows/tests.yml/badge.svg)](https://github.com/pcvolkmer/onco-analytics-monitor/actions/workflows/tests.yml)
+
 Diese Anwendung überwacht die konfigurierten Topics, ermittelt die Anzahl der Conditions nach ICD10-Gruppe sortiert
 und zeigt diese in Echtzeit an.
 
