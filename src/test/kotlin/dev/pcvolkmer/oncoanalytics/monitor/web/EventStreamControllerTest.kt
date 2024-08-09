@@ -2,6 +2,7 @@ package dev.pcvolkmer.oncoanalytics.monitor.web
 
 import dev.pcvolkmer.oncoanalytics.monitor.StatisticsSink
 import dev.pcvolkmer.oncoanalytics.monitor.conditions.Statistics
+import dev.pcvolkmer.oncoanalytics.monitor.conditions.StatisticsEntry
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -10,6 +11,7 @@ import org.springframework.http.MediaType
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.test.web.reactive.server.returnResult
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Sinks
 import reactor.test.StepVerifier
 import kotlin.time.Duration.Companion.seconds
@@ -42,6 +44,37 @@ class EventStreamControllerTest {
 
         StepVerifier.create(result.responseBody)
             .expectNextCount(1)
+            .expectTimeout(3.seconds.toJavaDuration())
+            .verify()
+    }
+
+    @Test
+    fun shouldSendOnlyLatestEventsWithinTimeWindow() {
+        val latestValue = 10
+
+        Flux.fromIterable(0..latestValue).subscribe { value ->
+            this.statisticsEventProducer.emitNext(
+                Statistics(
+                    "test",
+                    listOf(StatisticsEntry("test", value))
+                )
+            ) { _, _ -> false }
+        }
+
+        val result = webClient
+            .get().uri("/events")
+            .accept(MediaType.TEXT_EVENT_STREAM)
+            .exchange()
+            .expectStatus().isOk
+            .returnResult<Statistics>()
+
+        StepVerifier.create(result.responseBody)
+            .expectNext(
+                Statistics(
+                    "test",
+                    listOf(StatisticsEntry("test", latestValue))
+                )
+            )
             .expectTimeout(3.seconds.toJavaDuration())
             .verify()
     }
