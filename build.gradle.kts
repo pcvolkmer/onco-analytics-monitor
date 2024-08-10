@@ -1,3 +1,5 @@
+import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
+
 plugins {
     id("org.springframework.boot") version "3.3.2"
     id("io.spring.dependency-management") version "1.1.6"
@@ -8,7 +10,7 @@ plugins {
 }
 
 group = "dev.pcvolkmer.onco-analytics"
-version = "0.0.1-SNAPSHOT"
+version = "0.1.0-SNAPSHOT"
 
 java {
     toolchain {
@@ -57,4 +59,14 @@ kotlin {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.named<BootBuildImage>("bootBuildImage") {
+    imageName.set("ghcr.io/pcvolkmer/onco-analytics-monitor")
+
+    environment.set(environment.get() + mapOf(
+        "BP_OCI_SOURCE" to "https://github.com/pcvolkmer/onco-analytics-monitor",
+        "BP_OCI_LICENSES" to "AGPLv3",
+        "BP_OCI_DESCRIPTION" to "Kafka Topic monitoring for https://github.com/bzkf/onco-analytics-on-fhir"
+    ))
 }
